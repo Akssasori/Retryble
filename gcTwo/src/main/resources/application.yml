@@ -1,0 +1,27 @@
+server:
+  port: 5003
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: always
+    include-exception: true
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: basic
+
+app:
+  gc-one:
+    url: http://localhost:5002
+    name: gc-one
+
+logging:
+  level:
+    com.example: TRACE
+    root: INFO
+    org.springframework.web: DEBUG
+    org.hibernate: INFO
