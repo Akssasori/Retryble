@@ -22,41 +22,42 @@ public class UserController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-//    @Retry(name = "retryInstance", fallbackMethod = "retryFallBack")
-    @CircuitBreaker(name = "circuitbreakerInstance")
+    @Retry(name = "retryInstance", fallbackMethod = "retryFallBack")
+//    @CircuitBreaker(name = "circuitbreakerInstance")
     public ResponseEntity<UserResponseDTO> insert(@RequestBody final UserRequestDTO userRequestDTO) throws Exception {
 
         log.debug("POST send userDto {} ", userRequestDTO.toString());
 
         var userResponseDTO = new UserResponseDTO();
         BeanUtils.copyProperties(userRequestDTO, userResponseDTO);
+
         log.debug("Call client");
         System.out.println("-----start request other microservice--------");
         try {
-            log.debug("**************clientGCOne*******************");
+
             clientGcTwo.sendUser(userRequestDTO);
+            log.debug("**************clientGCOne*******************");
 
         } catch (Exception e) {
-            log.debug("EXCEPTION");
-            log.debug(e.getMessage());
+            log.error("Error request {}", e);
             throw new Exception(e.getMessage());
         }
 
-        log.debug("POST user successive {} ", userRequestDTO.getName());
-        log.info("User updated successfully userId {} ", userRequestDTO.getId());
-
+        log.info("Ending request {} ", userRequestDTO.getId());
         return ResponseEntity.ok().body(userResponseDTO);
     }
 
     public ResponseEntity<UserResponseDTO> retryFallBack(UserRequestDTO userRequestDTO, Throwable t) {
 
         var userResponseDTO = new UserResponseDTO();
+        BeanUtils.copyProperties(userRequestDTO,userResponseDTO);
+
         userResponseDTO.setId(2L);
         userResponseDTO.setName("RETRY");
 
         System.out.println("************************");
-        System.out.println(userRequestDTO.getId());
-        System.out.println(userRequestDTO.getName());
+        System.out.println(userResponseDTO.getId());
+        System.out.println(userResponseDTO.getName());
         System.out.println("************************");
 
         return ResponseEntity.ok().body(userResponseDTO);
