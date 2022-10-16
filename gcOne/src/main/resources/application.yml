@@ -32,7 +32,7 @@ resilience4j:
       circuitbreakerInstance:
         slidingWindowSize: 30
         permittedNumberOfCallsInHalfOpenState: 2
-        slidingWindowType: TIME_BASED
+        slidingWindowType: COUNT_BASED #COUNT_BASED TIME_BASED
         minimumNumberOfCalls: 2
         waitDurationInOpenState: 30s
         failureRateThreshold: 80
